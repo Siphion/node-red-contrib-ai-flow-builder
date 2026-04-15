@@ -167,7 +167,6 @@ docker/                Local dev compose
 - [ ] Per-conversation provider lock (to prevent accidental switches, track costs)
 - [ ] Inline diff preview for existing nodes
 - [ ] i18n
-- [ ] Publish on flows.nodered.org
 
 ## License
 
