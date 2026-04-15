@@ -1,0 +1,88 @@
+<script type="text/javascript">
+  RED.nodes.registerType("ai-provider-config", {
+    category: "config",
+    hasUsers: false,
+    defaults: {
+      name: { value: "AI Provider", required: true },
+      provider: { value: "openai", required: true },
+      model: { value: "gpt-5.4-mini", required: true },
+      baseUrl: { value: "" }
+    },
+    credentials: {
+      apiKey: { type: "password", required: true }
+    },
+    label: function () {
+      const name = (typeof this.name === "string" && this.name.trim()) ? this.name.trim() : null;
+      if (name) return name;
+      const p = (typeof this.provider === "string" && this.provider) ? this.provider : "ai";
+      const m = (typeof this.model === "string" && this.model) ? this.model : "provider";
+      return `${p}:${m}`;
+    },
+    paletteLabel: "AI Provider",
+    oneditprepare: function () {
+      const OPENAI_MODELS = [
+        "gpt-5.4", "gpt-5.4-mini", "gpt-5", "gpt-5-mini",
+        "gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini",
+        "o4", "o4-mini", "o3"
+      ];
+      const ANTHROPIC_MODELS = [
+        "claude-opus-4-6", "claude-sonnet-4-6",
+        "claude-opus-4-5", "claude-sonnet-4-5", "claude-haiku-4-5",
+        "claude-3-7-sonnet-latest", "claude-3-5-haiku-latest"
+      ];
+      const DOC_LINKS = {
+        openai: { href: "https://platform.openai.com/docs/models", label: "OpenAI model list →" },
+        anthropic: { href: "https://docs.anthropic.com/en/docs/about-claude/models", label: "Anthropic model list →" }
+      };
+      const $provider = $("#node-config-input-provider");
+      const $datalist = $("#nrafb-model-suggestions");
+      const $docLink = $("#nrafb-model-doc-link");
+      function refreshSuggestions() {
+        const p = $provider.val();
+        const list = p === "anthropic" ? ANTHROPIC_MODELS : OPENAI_MODELS;
+        $datalist.empty();
+        list.forEach(m => $datalist.append(`<option value="${m}">`));
+        const doc = DOC_LINKS[p] || DOC_LINKS.openai;
+        $docLink.attr("href", doc.href).find("span").text(doc.label);
+      }
+      $provider.on("change", refreshSuggestions);
+      refreshSuggestions();
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="ai-provider-config">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="My OpenAI key" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-provider"><i class="fa fa-cloud"></i> Provider</label>
+    <select id="node-config-input-provider">
+      <option value="openai">OpenAI</option>
+      <option value="anthropic">Anthropic</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-model"><i class="fa fa-cube"></i> Model</label>
+    <input type="text" id="node-config-input-model" list="nrafb-model-suggestions" placeholder="e.g. gpt-5.4 or claude-opus-4-6" autocomplete="off" />
+    <datalist id="nrafb-model-suggestions"></datalist>
+  </div>
+  <div class="form-row" style="margin-left:103px;font-size:11px;">
+    <a href="#" id="nrafb-model-doc-link" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> <span>Official model list</span></a>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-apiKey"><i class="fa fa-key"></i> API Key</label>
+    <input type="password" id="node-config-input-apiKey" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-baseUrl"><i class="fa fa-link"></i> Base URL</label>
+    <input type="text" id="node-config-input-baseUrl" placeholder="(optional — for proxies / compatible endpoints)" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="ai-provider-config">
+  <p>Credentials for an AI provider used by the <b>AI Chat</b> sidebar.</p>
+  <p>The API key is stored encrypted by Node-RED and never sent to the browser.</p>
+  <p>Supported: OpenAI, Anthropic.</p>
+</script>

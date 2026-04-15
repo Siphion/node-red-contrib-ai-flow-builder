@@ -1,0 +1,5 @@
+docker/
+test/
+.github/
+.gitignore
+*.log

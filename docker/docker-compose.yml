@@ -1,0 +1,12 @@
+services:
+  node-red:
+    image: nodered/node-red:4.1
+    container_name: nrafb-dev
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./data:/data
+      - ../:/data/node_modules/node-red-contrib-ai-flow-builder
+    environment:
+      - TZ=Europe/Rome
+    restart: unless-stopped

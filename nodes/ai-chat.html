@@ -1,0 +1,58 @@
+<script type="text/javascript">
+  (function () {
+    if (window.__nrafbSidebarRegistered) return;
+    window.__nrafbSidebarRegistered = true;
+
+    // Load CSS
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "ai-flow-builder/static/ai-chat.css";
+    document.head.appendChild(css);
+
+    // Sidebar container
+    const $content = $(`
+      <div class="nrafb-root">
+        <div class="nrafb-toolbar">
+          <button class="nrafb-btn nrafb-new" title="New chat"><i class="fa fa-plus"></i></button>
+          <select class="nrafb-conversations"><option value="">— conversations —</option></select>
+          <button class="nrafb-btn nrafb-delete" title="Delete chat"><i class="fa fa-trash"></i></button>
+          <span class="nrafb-spacer"></span>
+          <select class="nrafb-provider" title="Provider"></select>
+          <button class="nrafb-btn nrafb-provider-add" title="Add new AI provider"><i class="fa fa-plus"></i></button>
+          <button class="nrafb-btn nrafb-provider-edit" title="Edit selected provider"><i class="fa fa-cog"></i></button>
+        </div>
+        <div class="nrafb-messages"></div>
+        <div class="nrafb-inputbar">
+          <div class="nrafb-context">
+            <button class="nrafb-btn nrafb-tabpicker" title="Add tab context"><i class="fa fa-folder-open"></i> <span class="nrafb-tabpicker-label">active tab</span></button>
+            <button class="nrafb-btn nrafb-attach" title="Attach file"><i class="fa fa-paperclip"></i></button>
+            <input type="file" class="nrafb-file" multiple hidden />
+          </div>
+          <textarea class="nrafb-input" rows="3" placeholder="Ask the AI…"></textarea>
+          <button class="nrafb-btn nrafb-send" title="Send (Ctrl+Enter)"><i class="fa fa-paper-plane"></i></button>
+        </div>
+      </div>
+    `);
+
+    RED.sidebar.addTab({
+      id: "ai-flow-builder",
+      name: "AI Chat",
+      label: "AI Chat",
+      iconClass: "fa fa-comments",
+      content: $content,
+      closeable: true,
+      visible: true
+    });
+
+    // Load shared UI logic
+    $.when(
+      $.getScript("ai-flow-builder/static/message-renderer.js"),
+      $.getScript("ai-flow-builder/static/apply-handlers.js"),
+      $.getScript("ai-flow-builder/static/ai-chat.js")
+    ).done(() => {
+      if (window.NRAFB && typeof window.NRAFB.init === "function") {
+        window.NRAFB.init($content);
+      }
+    });
+  })();
+</script>
